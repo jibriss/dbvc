@@ -1,0 +1,11 @@
+<?php
+return array(
+    // http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html
+    'db' => array(),
+
+    // Directory where SQL tag files are stored
+    'tags_directory' => '',
+
+    // Directory where SQL patch files are stored
+    'patchs_directory' => ''
+);

@@ -1,0 +1,12 @@
+{
+    "require": {
+        "doctrine/dbal": "~2.4.3",
+        "symfony/console": "~2.5.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.5.0"
+    },
+    "autoload": {
+        "psr-4": { "Jibriss\\Dbvc\\": "src/" }
+    }
+}
