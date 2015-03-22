@@ -7,5 +7,5 @@ return array(
     'tags_directory' => '',
 
     // Directory where SQL patch files are stored
-    'patchs_directory' => ''
+    'patches_directory' => ''
 );
