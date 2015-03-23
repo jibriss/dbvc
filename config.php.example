@@ -7,5 +7,8 @@ return array(
     'tags_directory' => '',
 
     // Directory where SQL patch files are stored
-    'patchs_directory' => ''
+    'patches_directory' => '',
+    
+    // Name of the DB table to use to store versions
+    'dbvc_table' => 'migration_versions',
 );

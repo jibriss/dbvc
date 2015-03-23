@@ -6,7 +6,7 @@ $config = require_once 'config.php';
 
 $dbal = \Doctrine\DBAL\DriverManager::getConnection($config['db']);
 
-$db = new Db($dbal);
+$db = new Db($dbal, $config['dbvc_table']);
 $db->createMigrationsTableIfNotExists();
 
 $dbvc = new Dbvc(new File($config['patches_directory'], $config['tags_directory']), $db);
