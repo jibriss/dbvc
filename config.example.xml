@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- DBVC Config file - https://github.com/jibriss/dbvc -->
+<dbvc>
+
+  <!-- http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html -->
+  <db>
+    <dbname></dbname>
+    <user></user>
+    <password></password>
+    <host></host>
+    <driver></driver>
+  </db>
+
+  <!-- Directory where SQL patch files are stored -->
+  <patches_directory></patches_directory>
+
+  <!-- Directory where SQL tag files are stored -->
+  <tags_directory></tags_directory>
+
+  <!-- Name of the DB table to use to store versions -->
+  <dbvc_table>migration_versions</dbvc_table>
+
+</dbvc>

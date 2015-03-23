@@ -10,21 +10,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class TagCreateCommand extends Command
+class TagCreateCommand extends DbvcCommand
 {
-    /**
-     * @var \Jibriss\Dbvc\Dbvc
-     */
-    private $dbvc;
-
-    public function __construct(Dbvc $dbvc)
-    {
-        parent::__construct();
-        $this->dbvc = $dbvc;
-    }
-
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('tag:create')
             ->setDescription('Create a new tag from all the patches applied to your DB')

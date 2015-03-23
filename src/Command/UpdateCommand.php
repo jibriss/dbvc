@@ -10,21 +10,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateCommand extends Command
+class UpdateCommand extends DbvcCommand
 {
-    /**
-     * @var \Jibriss\Dbvc\Dbvc
-     */
-    private $dbvc;
-
-    public function __construct(Dbvc $dbvc)
-    {
-        parent::__construct();
-        $this->dbvc = $dbvc;
-    }
-
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('update')
             ->setDescription('Update you database with all the tag/patch possible. This may require some rollback')

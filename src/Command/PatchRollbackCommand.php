@@ -10,21 +10,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PatchRollbackCommand extends Command
+class PatchRollbackCommand extends DbvcCommand
 {
-    /**
-     * @var \Jibriss\Dbvc\Dbvc
-     */
-    private $dbvc;
-
-    public function __construct(Dbvc $dbvc)
-    {
-        parent::__construct();
-        $this->dbvc = $dbvc;
-    }
-
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('patch:rollback')
             ->addArgument('patch_name', InputArgument::REQUIRED, 'Name of the patch to rollback')

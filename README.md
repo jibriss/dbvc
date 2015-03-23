@@ -1,17 +1,36 @@
 # DataBase Version Control
 
-DBVC will manage your application migration/rollback SQL files.
+**This project is still in development**
+
+DBVC is a database schema migration tool.
+
+
+## What DBVC will do for you
+
+- Track what SQL scripts have been applied in your DB
+- Rollback a SQL script even if it's no longer on disk
+- Check if a SQL script has been changed on disk after being applied in DB
+
+
+## What DBVC *won't* do for you
+
+- Write your SQL scripts
+- Ensure migration and rollback are consistent
+- Ensure you haven't manually changed your database schema
+
 
 ## Installation
 
-You first need to create 2 versioned directories in your project, name them "patches" and "tags".
-
+    cd /opt
     git clone https://github.com/jibriss/dbvc.git
     cd dbvc
     composer install
-    mv config.php.example config.php
-    vim config.php
-    ./dbvc
+    ln -s /opt/dbvc/dbvc /usr/local/bin/dbvc
+    cd ~/workspace/my-project
+    dbvc init
+    vim dbvc.xml
+    dbvc status
+
 
 ## Getting started
 

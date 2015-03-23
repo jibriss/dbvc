@@ -10,21 +10,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class TagRollbackCommand extends Command
+class TagRollbackCommand extends DbvcCommand
 {
-    /**
-     * @var \Jibriss\Dbvc\Dbvc
-     */
-    private $dbvc;
-
-    public function __construct(Dbvc $dbvc)
-    {
-        parent::__construct();
-        $this->dbvc = $dbvc;
-    }
-
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('tag:rollback')
             ->addArgument('to', InputArgument::REQUIRED, 'The tag to rollback to')
