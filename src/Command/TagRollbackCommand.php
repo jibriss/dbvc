@@ -19,6 +19,7 @@ class TagRollbackCommand extends DbvcCommand
         $this
             ->setName('tag:rollback')
             ->addArgument('to', InputArgument::REQUIRED, 'The tag to rollback to')
+            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Just update the version table, do not execute the migration script')
             ->setDescription('Rollback your database to a previous tag')
         ;
     }
@@ -43,15 +44,21 @@ class TagRollbackCommand extends DbvcCommand
         }
 
         foreach ($tags as $tag) {
-            $output->writeln(">>> <info>Rollbacking tag '{$tag['name']}</info>");
-            $output->writeln('You are about to execute this SQL script on your database :');
-            $output->writeln("<comment>{$tag['rollback']}</comment>");
+            $withoutScript = $input->getOption('without-script');
+            $output->writeln(">>> <info>Rollbacking tag '{$tag['name']}'</info>");
+
+            if ($withoutScript) {
+                $output->writeln("The script won't be executed");
+            } else {
+                $output->writeln('You are about to execute this SQL script on your database :');
+                $output->writeln("<comment>{$tag['rollback']}</comment>");
+            }
 
             if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
                 $output->writeln("Rollback aborted by user");
                 return;
             } else {
-                $this->dbvc->rollback($tag);
+                $this->dbvc->rollback($tag, $withoutScript);
                 $output->writeln("Rollback done");
             }
         }

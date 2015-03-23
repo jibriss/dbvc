@@ -244,23 +244,37 @@ class DbvcTest extends \PHPUnit_Framework_TestCase
 
     // Ces 2 là c'est juste pour la forme
 
-    public function testMigrate()
+    /**
+     * @dataProvider trueFalseProvider
+     */
+    public function testMigrate($withoutScript)
     {
         $this->dbMock
             ->expects($this->once())
             ->method('migrate')
-            ->with('patch1');
+            ->with('patch1', $withoutScript);
 
-        $this->dbvc->migrate('patch1');
+        $this->dbvc->migrate('patch1', $withoutScript);
     }
 
-    public function testRollback()
+    /**
+     * @dataProvider trueFalseProvider
+     */
+    public function testRollback($withoutScript)
     {
         $this->dbMock
             ->expects($this->once())
             ->method('rollback')
-            ->with('tag2');
+            ->with('tag2', $withoutScript);
 
-        $this->dbvc->rollback('tag2');
+        $this->dbvc->rollback('tag2', $withoutScript);
+    }
+
+    public function trueFalseProvider()
+    {
+        return array(
+            array(true),
+            array(false)
+        );
     }
 }

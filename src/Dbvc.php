@@ -82,14 +82,14 @@ class Dbvc
         return $version;
     }
 
-    public function migrate($version)
+    public function migrate($version, $withoutScript = false)
     {
-        $this->db->migrate($version);
+        $this->db->migrate($version, $withoutScript);
     }
 
-    public function rollback($version)
+    public function rollback($version, $withoutScript = false)
     {
-        $this->db->rollback($version);
+        $this->db->rollback($version, $withoutScript);
     }
 
     public function isThereAnyPatchInDb()

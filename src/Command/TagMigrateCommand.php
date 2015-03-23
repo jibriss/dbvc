@@ -1,11 +1,6 @@
 <?php
 namespace Jibriss\Dbvc\Command;
 
-use Jibriss\Dbvc\Dbvc;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\TableHelper;
-use Symfony\Component\Console\Helper\TableStyle;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,6 +13,7 @@ class TagMigrateCommand extends DbvcCommand
 
         $this
             ->setName('tag:migrate')
+            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Just update the version table, do not execute the migration script')
             ->setDescription('Update your database to the last tag')
         ;
     }
@@ -34,16 +30,23 @@ class TagMigrateCommand extends DbvcCommand
             return;
         }
 
+        $withoutScript = $input->getOption('without-script');
+
         foreach ($tags as $tag) {
             $output->writeln(">>> <info>Migrating to tag '{$tag['name']}'</info>");
-            $output->writeln('You are about to execute this SQL script on your database :');
-            $output->writeln("<comment>{$tag['migration']}</comment>");
+
+            if ($withoutScript) {
+                $output->writeln("The script won't be executed");
+            } else {
+                $output->writeln('You are about to execute this SQL script on your database :');
+                $output->writeln("<comment>{$tag['migration']}</comment>");
+            }
 
             if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
                 $output->writeln("Migration aborted by user");
                 return;
             } else {
-                $this->dbvc->migrate($tag);
+                $this->dbvc->migrate($tag, $withoutScript);
                 $output->writeln("Tag migration done");
             }
         }

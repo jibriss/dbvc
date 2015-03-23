@@ -41,11 +41,11 @@ class Db
         );
     }
 
-    public function migrate($version)
+    public function migrate($version, $withoutScript = false)
     {
         $this->connection->beginTransaction();
 
-        if (!empty($version["migration"])) {
+        if (!$withoutScript && !empty($version["migration"])) {
             $this->connection->exec($version["migration"]);
         }
 
@@ -53,11 +53,11 @@ class Db
         $this->connection->commit();
     }
 
-    public function rollback($version)
+    public function rollback($version, $withoutScript = false)
     {
         $this->connection->beginTransaction();
 
-        if (!empty($version['rollback'])) {
+        if (!$withoutScript && !empty($version['rollback'])) {
             $this->connection->exec($version['rollback']);
         }
 

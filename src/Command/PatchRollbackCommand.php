@@ -19,6 +19,7 @@ class PatchRollbackCommand extends DbvcCommand
         $this
             ->setName('patch:rollback')
             ->addArgument('patch_name', InputArgument::REQUIRED, 'Name of the patch to rollback')
+            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Just update the version table, do not execute the migration script')
             ->setDescription('Rollback a patch from the database')
         ;
     }
@@ -31,14 +32,21 @@ class PatchRollbackCommand extends DbvcCommand
         if (!$patch['in_db']) {
             $output->writeln('This patch is not in db');
         } else {
+            $withoutScript = $input->getOption('without-script');
             $output->writeln(">>> <info>Rollbacking patch '{$patch['name']}'</info>");
-            $output->writeln('You are about to execute this SQL script on your database :');
-            $output->writeln("<comment>{$patch['rollback']}</comment>");
 
-            if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
-                $output->writeln("Command aborted by user");
+            if ($withoutScript) {
+                $output->writeln("The script won't be executed");
             } else {
-                $this->dbvc->rollback($patch);
+                $output->writeln('You are about to execute this SQL script on your database :');
+                $output->writeln("<comment>{$patch['rollback']}</comment>");
+            }
+
+            if ($this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
+                $this->dbvc->rollback($patch, $withoutScript);
+                $output->writeln("Rollback done");
+            } else {
+                $output->writeln("Command aborted by user");
             }
         }
     }

@@ -19,6 +19,7 @@ class PatchMigrateCommand extends DbvcCommand
         $this
             ->setName('patch:migrate')
             ->addArgument('patch_name', InputArgument::REQUIRED, 'Name of the patch to apply')
+            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Just update the version table, do not execute the migration script')
             ->setDescription('Apply a patch to the database')
         ;
     }
@@ -33,14 +34,20 @@ class PatchMigrateCommand extends DbvcCommand
         } elseif ($patch['in_db']) {
             $output->writeln('This patch is already in DB');
         } else {
+            $withoutScript = $input->getOption('without-script');
             $output->writeln(">>> <info>Migrating patch '{$patch['name']}'</info>");
-            $output->writeln('You are about to execute this SQL script on your database :');
-            $output->writeln("<comment>{$patch['migration']}</comment>");
+
+            if ($withoutScript) {
+                $output->writeln("The script won't be executed");
+            } else {
+                $output->writeln('You are about to execute this SQL script on your database :');
+                $output->writeln("<comment>{$patch['migration']}</comment>");
+            }
 
             if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
                 $output->writeln("Command aborted by user");
             } else {
-                $this->dbvc->migrate($patch);
+                $this->dbvc->migrate($patch, $withoutScript);
 
                 $output->writeln("Patch migrated");
             }
