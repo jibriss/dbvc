@@ -3,7 +3,7 @@ namespace Jibriss\Dbvc;
 
 define('DBVC_VERSION', 'beta');
 
-require_once 'vendor/autoload.php';
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 $application = new \Symfony\Component\Console\Application();
 $application->add(new Command\InitCommand());
