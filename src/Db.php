@@ -43,20 +43,26 @@ class Db
 
     public function migrate($version)
     {
+        $this->connection->beginTransaction();
+
         if (!empty($version["migration"])) {
             $this->connection->exec($version["migration"]);
         }
 
         $this->insert($version);
+        $this->connection->commit();
     }
 
     public function rollback($version)
     {
+        $this->connection->beginTransaction();
+
         if (!empty($version['rollback'])) {
             $this->connection->exec($version['rollback']);
         }
 
         $this->delete($version);
+        $this->connection->commit();
     }
 
     public function getAllVersions($type)
