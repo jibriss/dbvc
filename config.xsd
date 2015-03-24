@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="dbvc">
+        <xs:complexType>
+            <xs:sequence>
+                <!-- http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html -->
+                <xs:element name="db">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:sequence>
+                                <xs:element name="driver">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:enumeration value="pdo_mysql"/>
+                                            <xs:enumeration value="drizzle_pdo_mysql"/>
+                                            <xs:enumeration value="mysqli"/>
+                                            <xs:enumeration value="pdo_sqlite"/>
+                                            <xs:enumeration value="pdo_pgsql"/>
+                                            <xs:enumeration value="pdo_oci"/>
+                                            <xs:enumeration value="pdo_sqlsrv"/>
+                                            <xs:enumeration value="sqlsrv"/>
+                                            <xs:enumeration value="oci8"/>
+                                            <xs:enumeration value="sqlanywhere"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="host" type="xs:string" />
+                                <xs:element name="dbname" type="xs:date" />
+                                <xs:element name="user" type="xs:string" />
+                                <xs:element name="password" type="xs:string" />
+                            </xs:sequence>
+
+                            <xs:element name="url" type="xs:string" />
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="patches_directory" type="xs:string" />
+
+                <xs:element name="tags_directory" type="xs:string" />
+
+                <xs:element name="dbvc_table" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
