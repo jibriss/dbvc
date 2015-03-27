@@ -24,10 +24,16 @@
                                         </xs:restriction>
                                     </xs:simpleType>
                                 </xs:element>
-                                <xs:element name="host" type="xs:string" />
-                                <xs:element name="dbname" type="xs:date" />
                                 <xs:element name="user" type="xs:string" />
                                 <xs:element name="password" type="xs:string" />
+                                <xs:element name="host" type="xs:string" />
+                                <xs:element name="port" type="xs:nonNegativeInteger" />
+                                <xs:element name="dbname" type="xs:string" />
+                                <xs:element name="unix_socket" type="xs:string" />
+                                <xs:element name="charset" type="xs:string" />
+                                <xs:element name="sslmode" type="xs:string" />
+                                <xs:element name="path" type="xs:string" />
+                                <xs:element name="memory" type="xs:boolean" />
                             </xs:sequence>
 
                             <xs:element name="url" type="xs:string" />

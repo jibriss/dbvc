@@ -11,7 +11,7 @@
         <user></user>
         <password></password>
         <!-- or <url></url> -->
-    </db>
+     </db>
 
     <!-- Directory where SQL patch files are stored -->
     <patches_directory></patches_directory>
