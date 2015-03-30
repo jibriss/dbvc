@@ -22,51 +22,87 @@ DBVC is a database schema migration tool.
 ## Installation
 
     cd /opt
-    git clone https://github.com/jibriss/dbvc.git
+    sudo mkdir dbvc
+    sudo chown $USER:$USER dbvc
     cd dbvc
+    git clone git@github.com:jibriss/dbvc.git .
     composer install
-    ln -s /opt/dbvc/dbvc /usr/local/bin/dbvc
-    cd ~/workspace/my-project
-    dbvc init
-    vim dbvc.xml
-    dbvc status
+    sudo ln -s /opt/dbvc/dbvc /usr/local/bin/dbvc
 
+There is no tag yet, just run ``git pull`` to update to the last version
 
 ## Getting started
 
-John is part of the development team of the happy-project. He's developing a feature that requires a database schema migration. He has to write 2 SQL file for migration, and rollback.
+DBVC introduces a simple workflow to handle your database migrations :
 
-    john@laptop:~/workspace$ git checkout -b awesome-feature
-    john@laptop:~/workspace$ vim hack/some/code
-    john@laptop:~/workspace$ vim sql/patches/awesome-feature-migration.sql
-    john@laptop:~/workspace$ vim sql/patches/awesome-feature-rollback.sql
-    john@laptop:~/workspace$ dbvc patch:migrate awesome-feature
+- **Tags** are stable version on your database. Each time you release a new version of your application which requires
+database migration, you should create a new tag.
+- **Patches** are SQL migration script of features still in development, each branch can contain a patch. Once all
+feature are merged into master/trunk, you can create a new tag from the different patches. Unlike tags, patches file
+can change over time.
 
-Jane is also working on the happy-projet, she's develops an other feature that also requires database migration. She write 2 SQL files, like John, in her branch.
 
-    jane@laptop:~/workspace$ git checkout -b uber-feature
-    jane@laptop:~/workspace$ vim code/some/hack
-    jane@laptop:~/workspace$ vim sql/patches/uber-feature-migration.sql
-    jane@laptop:~/workspace$ vim sql/patches/uber-feature-rollback.sql
-    jane@laptop:~/workspace$ dbvc patch:migrate uber-feature
+### Creating a new patch
 
-Now she wants to help john on his feature. She switch on his branch
+To create a new patch, you have to manually add 2 files into your patch folder :
 
-    jane@laptop:~/workspace$ git checkout awsome-feature
-    jane@laptop:~/workspace$ dbvc update
+- awesome-feature-migration.sql
+- awesome-feature-rollback.sql
 
-``dbvc update`` will update her database by rollbacking her uber-feature patch, then applying john's
+DBVC will automatically recognize this new patch :
 
-When all the hack are finished, you can release a new version of the application.
+    $ dbvc status
+    DBVC version beta
 
-    jane@laptop:~/workspace$ git checkout master
-    jane@laptop:~/workspace$ git merge awesome-feature
-    jane@laptop:~/workspace$ git merge uber-feature
-    jane@laptop:~/workspace$ dbvc update
+    Patch name        On disk   In DB
+    awesome-feature   Yes       No
 
-Now the master branch contain both patch files. After some testing, she can create a new tag. ``dbvc tag:create`` will remove all the patches and merge them into a single tag SQL file
+From here, you can apply this patch to your database by running ``dbvc patch:migrate awesome-feature``. After moving to
+an other branch, you may need to rollback this patch with the command ``dbvc patch:rollback awesome-feature``
 
-    jane@laptop:~/workspace$ dbvc tag:create
-    jane@laptop:~/workspace$ git add -A
-    jane@laptop:~/workspace$ git commit -m "Database migration"
-    jane@laptop:~/workspace$ git tag -a v1.1.0 'version 1.1'
+If the patch file changed after you applied it to your database, DBVC will detect it :
+
+    $ dbvc status
+    DBVC version beta
+
+    Patch name        On disk   In DB
+    awesome-feature   Changed   Yes
+
+You can fix this with ``dbvc patch:migrate awesome-feature``
+
+
+### Creating a new tag
+
+Once few branches have been merged in master, you may need to release a new version of your application. This is a good
+time to create a new tag. Run ``dbvc tag:create`` to merge all patches into a tag.
+
+    $ dbvc status
+    DBVC version beta
+
+    Patch name        On disk   In DB
+    awesome-feature   Yes       Yes
+    nice-improvement  Yes       Yes
+
+    Tag name   On disk   In DB
+    1          Yes       Yes
+
+    $ dbvc tag:create
+    [...]
+
+    $ dbvc status
+    DBVC version beta
+
+    Tag name   On disk   In DB
+    1          Yes       Yes
+    2          Yes       Yes
+
+A new file ``2-migration.sql`` will appear in the tags directory.
+
+If a developer is on tag 1, he can update his database to the new version by running ``dbvc tag:migrate``
+
+
+### All in once
+
+Let's make it easier, the magic ``dbvc update`` command will update your database will all patches and tags available on the filesystem.
+
+
