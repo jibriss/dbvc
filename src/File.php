@@ -45,7 +45,7 @@ class File
 
         if (file_exists($migrationFile)) {
             $migration = file_get_contents($migrationFile);
-            $checksum = md5($migrationFile);
+            $checksum = md5($migration);
             $version['rollback']  = file_exists($rollbackFile) ? file_get_contents($rollbackFile) : '';
             $version['migration'] = $migration;
             $version['checksum']  = $checksum;
