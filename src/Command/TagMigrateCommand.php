@@ -43,11 +43,11 @@ class TagMigrateCommand extends DbvcCommand
             }
 
             if ($this->askConfirmation($output)) {
-                $output->writeln("Migration aborted by user");
-                return;
-            } else {
                 $this->dbvc->migrate($tag, $withoutScript);
                 $output->writeln("Tag migration done");
+            } else {
+                $output->writeln("Migration aborted by user");
+                return;
             }
         }
     }
