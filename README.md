@@ -31,6 +31,7 @@ DBVC is a database schema migration tool.
 
 There is no tag yet, just run ``git pull`` to update to the last version
 
+
 ## Getting started
 
 DBVC introduces a simple workflow to handle your database migrations :
@@ -38,8 +39,16 @@ DBVC introduces a simple workflow to handle your database migrations :
 - **Tags** are stable version on your database. Each time you release a new version of your application which requires
 database migration, you should create a new tag.
 - **Patches** are SQL migration script of features still in development, each branch can contain a patch. Once all
-feature are merged into master/trunk, you can create a new tag from the different patches. Unlike tags, patches file
+feature are merged into master/trunk, you can create a new tag from the different patches. Unlike tags, patch files
 can change over time.
+
+
+### Project initialization
+
+First create 2 directories in your project folder structure. 1 for patches and 1 for tags.
+
+Then go to your project root and run ``dbvc init``. This command will create an empty configuration file ``dbvc.xml``.
+Edit it to your needs and you'll be ready.
 
 
 ### Creating a new patch
@@ -104,5 +113,4 @@ If a developer is on tag 1, he can update his database to the new version by run
 ### All in once
 
 Let's make it easier, the magic ``dbvc update`` command will update your database will all patches and tags available on the filesystem.
-
 
