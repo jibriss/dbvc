@@ -20,21 +20,47 @@ class PatchMigrateCommand extends DbvcCommand
             ->setName('patch:migrate')
             ->addArgument('patch_name', InputArgument::REQUIRED, 'Name of the patch to apply')
             ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Only update the version table, do not execute the migration script')
-            ->setDescription('Apply a patch to the database')
+            ->setDescription('Apply a patch to the database. If the patch is already in DB but the file changed on disk, this will rollback and re-apply the patch')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getArgument('patch_name');
-        $patch = $this->dbvc->getVersion('patch', $name);
+        $name          = $input->getArgument('patch_name');
+        $withoutScript = $input->getOption('without-script');
+        $patch         = $this->dbvc->getVersion('patch', $name);
 
         if (!$patch['on_disk']) {
             $output->writeln('This patch is not on disk');
-        } elseif ($patch['in_db']) {
-            $output->writeln('This patch is already in DB');
+            return;
+        }
+
+        if ($patch['changed']) {
+            $output->writeln("The patch '$name' file on disk has changed. You need to rollback then re-apply");
+
+            $output->writeln(">>> <info>Rollbacking patch '{$patch['name']}'</info>");
+
+            if ($withoutScript) {
+                $output->writeln("The script won't be executed");
+            } else {
+                $output->writeln('You are about to execute this SQL script on your database :');
+                $output->writeln("<comment>{$patch['rollback']}</comment>");
+            }
+
+            if ($this->askConfirmation($output)) {
+                $this->dbvc->rollback($patch, $withoutScript);
+                $output->writeln("Patch rollbacked");
+            } else {
+                $output->writeln("Command aborted by user");
+                return;
+            }
+        }
+
+        $patch = $this->dbvc->getVersion('patch', $name);
+
+        if ($patch['in_db']) {
+            $output->writeln('This patch is already up-to-date in DB');
         } else {
-            $withoutScript = $input->getOption('without-script');
             $output->writeln(">>> <info>Migrating patch '{$patch['name']}'</info>");
 
             if ($withoutScript) {
