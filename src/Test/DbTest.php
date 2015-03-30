@@ -78,8 +78,35 @@ class DbTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertNotFalse(
             $this->connection->fetchAll('SELECT id FROM test_users;'),
-            'Le script de migration a bien été créé'
+            'La table "test_users" a bien été créé'
         );
+    }
+
+    public function testMigrate_WithoutScript()
+    {
+        $tag = array(
+            'name'      => '1',
+            'type'      => 'tag',
+            'migration' => 'CREATE TABLE test_users(id INT);',
+            'rollback'  => 'DROP TABLE test_users;'
+        );
+
+        $this->db->migrate($tag, true);
+
+        $this->assertEquals(
+            array(
+                array(
+                    'name'      => '1',
+                    'type'      => 'tag',
+                    'rollback'  => 'DROP TABLE test_users;',
+                    'date'      => date('Y-m-d H:i:s'),
+                    'checksum'  => md5('CREATE TABLE test_users(id INT);')
+                )
+            ),
+            $this->connection->fetchAll('SELECT * FROM migration_versions')
+        );
+        $this->setExpectedException('Doctrine\DBAL\DBALException', 'no such table');
+        $this->connection->fetchAll('SELECT * FROM test_users');
     }
 
     public function testRollback()
@@ -88,7 +115,7 @@ class DbTest extends \PHPUnit_Framework_TestCase
             'name'     => 'my_patch',
             'type'     => 'patch',
             'rollback' => 'DROP TABLE test_articles;',
-            'checksum' => '',
+            'checksum' => md5('CREATE TABLE test_articles(id INT);'),
             'date'     => date('Y-m-d H:i:s')
         );
 
@@ -100,5 +127,27 @@ class DbTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $this->connection->fetchColumn('SELECT COUNT(*) FROM migration_versions'));
         $this->setExpectedException('Doctrine\DBAL\DBALException', 'no such table');
         $this->connection->fetchAll('SELECT * FROM test_articles');
+    }
+
+    public function testRollback_WithoutScript()
+    {
+        $patch = array(
+            'name'     => 'my_patch',
+            'type'     => 'patch',
+            'rollback' => 'DROP TABLE test_articles;',
+            'checksum' => md5('CREATE TABLE test_articles(id INT);'),
+            'date'     => date('Y-m-d H:i:s')
+        );
+
+        $this->connection->executeUpdate('CREATE TABLE test_articles(id INT, content TEXT)');
+        $this->connection->insert('migration_versions', $patch);
+
+        $this->db->rollback($patch, true);
+
+        $this->assertEquals(0, $this->connection->fetchColumn('SELECT COUNT(*) FROM migration_versions'));
+        $this->assertNotFalse(
+            $this->connection->fetchAll('SELECT id FROM test_articles;'),
+            'La table "test_users" a bien été créé'
+        );
     }
 }

@@ -19,7 +19,7 @@ class PatchRollbackCommand extends DbvcCommand
         $this
             ->setName('patch:rollback')
             ->addArgument('patch_name', InputArgument::REQUIRED, 'Name of the patch to rollback')
-            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Just update the version table, do not execute the migration script')
+            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Only update the version table, do not execute the migration script')
             ->setDescription('Rollback a patch from the database')
         ;
     }
@@ -42,7 +42,7 @@ class PatchRollbackCommand extends DbvcCommand
                 $output->writeln("<comment>{$patch['rollback']}</comment>");
             }
 
-            if ($this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
+            if ($this->askConfirmation($output)) {
                 $this->dbvc->rollback($patch, $withoutScript);
                 $output->writeln("Rollback done");
             } else {

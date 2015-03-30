@@ -13,7 +13,7 @@ class TagMigrateCommand extends DbvcCommand
 
         $this
             ->setName('tag:migrate')
-            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Just update the version table, do not execute the migration script')
+            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Only update the version table, do not execute the migration script')
             ->setDescription('Update your database to the last tag')
         ;
     }
@@ -42,7 +42,7 @@ class TagMigrateCommand extends DbvcCommand
                 $output->writeln("<comment>{$tag['migration']}</comment>");
             }
 
-            if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
+            if ($this->askConfirmation($output)) {
                 $output->writeln("Migration aborted by user");
                 return;
             } else {

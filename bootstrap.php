@@ -1,11 +1,11 @@
 <?php
 namespace Jibriss\Dbvc;
 
-define('DBVC_VERSION', 'beta');
-
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 $application = new \Symfony\Component\Console\Application();
+$application->setVersion('beta');
+$application->setName('DBVC');
 $application->add(new Command\InitCommand());
 $application->add(new Command\StatusCommand());
 $application->add(new Command\PatchMigrateCommand());

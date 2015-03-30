@@ -45,7 +45,7 @@ class TagCreateCommand extends DbvcCommand
             $output->writeln(" - {$patch['name']}");
         }
 
-        if ($this->getHelper('dialog')->askConfirmation($output, '<question>Create the new tag ?</question> ', false)) {
+        if ($this->askConfirmation($output, 'Create the new tag ?')) {
             $tag = $this->dbvc->createNewTag();
             $output->writeln("New tag created '{$tag['name']}'");
         } else {

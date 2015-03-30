@@ -19,11 +19,14 @@ class UpdateCommand extends DbvcCommand
         $this
             ->setName('update')
             ->setDescription('Update you database with all the tag/patch possible. This may require some rollback')
+            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Only update the version table, do not execute the migration script')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $withoutScript = $input->getOption('without-script');
+
         if ($nbtag = count($tags = $this->dbvc->getAllTagToMigrate()) > 0) {
             $patches = $this->dbvc->getAllPatchesInDb();
 
@@ -38,12 +41,12 @@ class UpdateCommand extends DbvcCommand
                         $output->writeln('You are about to execute this SQL script on your database :');
                         $output->writeln("<comment>{$patch['rollback']}</comment>");
 
-                        if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
+                        if ($this->askConfirmation($output)) {
+                            $this->dbvc->rollback($patch, $withoutScript);
+                            $output->writeln("Patch rollbacked");
+                        } else {
                             $output->writeln("The tags won't be migrated");
                             $tags = array();
-                        } else {
-                            $this->dbvc->rollback($patch);
-                            $output->writeln("Patch migrated");
                         }
                     }
                 } else {
@@ -57,12 +60,12 @@ class UpdateCommand extends DbvcCommand
                 $output->writeln('You are about to execute this SQL script on your database :');
                 $output->writeln("<comment>{$tag['migration']}</comment>");
 
-                if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
+                if ($this->askConfirmation($output)) {
+                    $this->dbvc->migrate($tag, $withoutScript);
+                    $output->writeln("Tag migrated");
+                } else {
                     $output->writeln("Command aborted by user");
                     break;
-                } else {
-                    $this->dbvc->migrate($tag);
-                    $output->writeln("Tag migrated");
                 }
             }
         }
@@ -76,11 +79,11 @@ class UpdateCommand extends DbvcCommand
             $output->writeln('You are about to execute this SQL script on your database :');
             $output->writeln("<comment>{$patch['rollback']}</comment>");
 
-            if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
-                $output->writeln("Command aborted by user");
-            } else {
-                $this->dbvc->rollback($patch);
+            if ($this->askConfirmation($output)) {
+                $this->dbvc->rollback($patch, $withoutScript);
                 $output->writeln("Patch migrated");
+            } else {
+                $output->writeln("Command aborted by user");
             }
         }
 
@@ -91,11 +94,11 @@ class UpdateCommand extends DbvcCommand
             $output->writeln('You are about to execute this SQL script on your database :');
             $output->writeln("<comment>{$patch['migration']}</comment>");
 
-            if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
-                $output->writeln("Command aborted by user");
-            } else {
-                $this->dbvc->migrate($patch);
+            if ($this->askConfirmation($output)) {
+                $this->dbvc->migrate($patch, $withoutScript);
                 $output->writeln("Patch migrated");
+            } else {
+                $output->writeln("Command aborted by user");
             }
         }
     }

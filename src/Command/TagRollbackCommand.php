@@ -19,7 +19,7 @@ class TagRollbackCommand extends DbvcCommand
         $this
             ->setName('tag:rollback')
             ->addArgument('to', InputArgument::REQUIRED, 'The tag to rollback to')
-            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Just update the version table, do not execute the migration script')
+            ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Only update the version table, do not execute the migration script')
             ->setDescription('Rollback your database to a previous tag')
         ;
     }
@@ -54,12 +54,12 @@ class TagRollbackCommand extends DbvcCommand
                 $output->writeln("<comment>{$tag['rollback']}</comment>");
             }
 
-            if (!$this->getHelper('dialog')->askConfirmation($output, '<question>Are you sure ?</question> ', false)) {
-                $output->writeln("Rollback aborted by user");
-                return;
-            } else {
+            if ($this->askConfirmation($output)) {
                 $this->dbvc->rollback($tag, $withoutScript);
                 $output->writeln("Rollback done");
+            } else {
+                $output->writeln("Rollback aborted by user");
+                return;
             }
         }
     }

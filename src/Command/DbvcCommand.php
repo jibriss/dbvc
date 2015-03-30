@@ -27,9 +27,8 @@ abstract class DbvcCommand extends Command
 
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('DBVC - ' . DBVC_VERSION . PHP_EOL);
+        $output->writeln($this->getApplication()->getLongVersion() . PHP_EOL);
         $this->setCode(array($this, 'safeExecute'));
-
         $configLoader = new ConfigLoader();
 
         try {
@@ -78,5 +77,10 @@ abstract class DbvcCommand extends Command
         }
 
         return $this->execute($input, $output);
+    }
+
+    protected function askConfirmation(OutputInterface $output, $question = 'Are you sure ?', $default = true)
+    {
+        return $this->getHelper('dialog')->askConfirmation($output, "<question>$question</question> ", $default);
     }
 }
