@@ -60,5 +60,9 @@ class StatusCommand extends DbvcCommand
             $table->setRows(array());
             $output->writeln('');
         }
+
+        if (count($tags) == 0 && count($patches) == 0) {
+            $output->writeln('There is no patch/tag available');
+        }
     }
 }
