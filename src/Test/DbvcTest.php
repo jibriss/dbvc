@@ -188,6 +188,33 @@ class DbvcTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testGetStatus_TagOrder()
+    {
+        $this->dbMock
+            ->expects($this->once())
+            ->method('getAllVersions')
+            ->with('tag')
+            ->will($this->returnValue(array(
+                        array('name' => '10', 'rollback' => 'DROP TABLE c;', 'checksum' => md5('CREATE TABLE c(id INT);')),
+                        array('name' => '8', 'rollback' => 'DROP TABLE a;', 'checksum' => md5('CREATE TABLE a(id INT);')),
+                        array('name' => '9', 'rollback' => 'DROP TABLE b;', 'checksum' => md5('CREATE TABLE b(id INT);')),
+                    )));
+        $this->fileMock
+            ->expects($this->once())
+            ->method('getAllVersions')
+            ->with('tag')
+            ->will($this->returnValue(array(
+                        array('name' => '8', 'rollback' => 'DROP TABLE a;', 'migration' => 'CREATE TABLE a(id INT);', 'checksum' => md5('CREATE TABLE a(id INT);')),
+                        array('name' => '10', 'rollback' => 'DROP TABLE c;', 'migration' => 'CREATE TABLE c(id INT);', 'checksum' => md5('CREATE TABLE c(id INT);')),
+                        array('name' => '9', 'rollback' => 'DROP TABLE b;', 'migration' => 'CREATE TABLE b(id INT);', 'checksum' => md5('CREATE TABLE b(id INT);')),
+                    )));
+
+        $this->assertEquals(
+            array('8', '9', '10'),
+            array_keys($this->dbvc->getStatus('tag'))
+        );
+    }
+
     public function testCreateNewTag()
     {
         $this->dbMock

@@ -50,6 +50,15 @@ class Dbvc
             );
         }
 
+        if ($type == 'tag') {
+            uasort(
+                $versions,
+                function($a, $b) {
+                    return (int)$a['name'] - (int)$b['name'];
+                }
+            );
+        }
+
         return $versions;
     }
 
@@ -105,13 +114,6 @@ class Dbvc
             return !$tag['in_db'];
         });
 
-        usort(
-            $tags,
-            function($a, $b) {
-                return strcmp($a['name'], $b['name']);
-            }
-        );
-
         return $tags;
     }
 
@@ -123,12 +125,7 @@ class Dbvc
             return $tag['in_db'] && (int)$tag['name'] > (int)$targetTagName;
         });
 
-        usort(
-            $tags,
-            function($a, $b) {
-                return -strcmp($a['name'], $b['name']);
-            }
-        );
+        $tags = array_reverse($tags);
 
         return $tags;
     }
