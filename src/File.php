@@ -13,21 +13,86 @@ class File
         );
     }
 
+    public function detectErrors()
+    {
+        $errors = array();
+
+        foreach (glob($this->path['tag'] .'*') as $file) {
+            if (substr($file, -14) !== '-migration.sql' && substr($file, -13) !== '-rollback.sql') {
+                $errors[] = sprintf(
+                    "The file '%s' does not follow the naming convention rule.\nIt will be ignored",
+                    $file
+                );
+            } elseif (substr($file, -14) === '-migration.sql') {
+                $rollbackFile = str_replace('-migration.sql', '-rollback.sql', $file);
+
+                if (!file_exists($rollbackFile)) {
+                    throw new \RuntimeException(
+                        "The tags directory has been corrupted : the file '$rollbackFile' is missing.\n"
+                        . "Please fix this manually"
+                    );
+                }
+            } elseif (substr($file, -13) === '-rollback.sql') {
+                $migrationFile = str_replace('-rollback.sql', '-migration.sql', $file);
+
+                if (!file_exists($migrationFile)) {
+                    throw new \RuntimeException(
+                        "The tags directory has been corrupted : the file '$migrationFile' is missing.\n"
+                        . "Please fix this manually"
+                    );
+                }
+            }
+        }
+
+        foreach (glob($this->path['patch'] .'*') as $file) {
+            if (substr($file, -14) !== '-migration.sql' && substr($file, -13) !== '-rollback.sql') {
+                $errors[] = sprintf(
+                    "The file '%s' does not follow the naming convention rule.\nIt will be ignored",
+                    $file
+                );
+            } elseif (substr($file, -14) === '-migration.sql') {
+                $rollbackFile = str_replace('-migration.sql', '-rollback.sql', $file);
+
+                if (!file_exists($rollbackFile)) {
+                    $errors[] = sprintf(
+                        "The migration '%s' has no rollback file associated.\nIt should be named '%s'.\n"
+                        . "If there is no rollback to do, please create an empty file.\nThis file will be ignored.",
+                        $file, $rollbackFile
+                    );
+                }
+            } elseif (substr($file, -13) === '-rollback.sql') {
+                $migrationFile = str_replace('-rollback.sql', '-migration.sql', $file);
+
+                if (!file_exists($migrationFile)) {
+                    $errors[] = sprintf(
+                        "The rollback '%s' has no migration file associated.\nIt should be named '%s'.\n"
+                        . "If there is no migration to do, please create an empty file.\nThis file will be ignored.",
+                        $file, $migrationFile
+                    );
+                }
+            }
+        }
+
+        return $errors;
+    }
+
     public function getAllVersions($type)
     {
         $versions = array();
 
         foreach (glob($this->path[$type] . '*-migration.sql') as $file) {
             $name = str_replace(array($this->path[$type], '-migration.sql'), '', $file);
-            $migration = file_get_contents($file);
             $rollbackFile = str_replace('-migration.sql', '-rollback.sql', $file);
 
-            $versions[$name] = array(
-                'name'      => $name,
-                'migration' => $migration,
-                'rollback'  => file_exists($rollbackFile) ? file_get_contents($rollbackFile) : '',
-                'checksum'  => md5($migration)
-            );
+            if (file_exists($rollbackFile)) {
+                $migration = file_get_contents($file);
+                $versions[$name] = array(
+                    'name'      => $name,
+                    'migration' => $migration,
+                    'rollback'  => file_exists($rollbackFile) ? file_get_contents($rollbackFile) : null,
+                    'checksum'  => md5($migration)
+                );
+            }
         }
 
         return $versions;

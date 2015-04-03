@@ -269,7 +269,15 @@ class DbvcTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    // Ces 2 là c'est juste pour la forme
+    public function testDetectErrors()
+    {
+        $this->fileMock
+            ->expects($this->once())
+            ->method('detectErrors')
+            ->will($this->returnValue(array('error1', 'error2')));
+
+        $this->assertEquals(array('error1', 'error2'), $this->dbvc->detectErrors());
+    }
 
     /**
      * @dataProvider trueFalseProvider

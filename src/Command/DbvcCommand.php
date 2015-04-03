@@ -61,6 +61,10 @@ abstract class DbvcCommand extends Command
         $db->createMigrationsTableIfNotExists();
 
         $this->dbvc = new Dbvc(new File($config['patches_directory'], $config['tags_directory']), $db);
+
+        foreach ($this->dbvc->detectErrors() as $error) {
+            $output->writeln("<error>$error</error>\n");
+        }
     }
 
     /**

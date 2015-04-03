@@ -198,4 +198,9 @@ class Dbvc
 
         return $tag;
     }
+
+    public function detectErrors()
+    {
+        return $this->file->detectErrors();
+    }
 }
