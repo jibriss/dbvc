@@ -88,6 +88,7 @@ class File
                 $migration = file_get_contents($file);
                 $versions[$name] = array(
                     'name'      => $name,
+                    'type'      => $type,
                     'migration' => $migration,
                     'rollback'  => file_exists($rollbackFile) ? file_get_contents($rollbackFile) : null,
                     'checksum'  => md5($migration)
