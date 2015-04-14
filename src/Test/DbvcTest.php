@@ -269,6 +269,40 @@ class DbvcTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testGetAllPatchesToRollback()
+    {
+        $this->dbMock
+            ->expects($this->once())
+            ->method('getAllVersions')
+            ->with('patch')
+            ->will($this->returnValue(array(
+                array('name' => 'patch-a', 'rollback' => 'DROP TABLE a;', 'checksum' => md5('CREATE TABLE a(id INT);')),
+                array('name' => 'patch-b', 'rollback' => 'DROP TABLE b;', 'checksum' => md5('CREATE TABLE b(id INT);')),
+            )));
+        $this->fileMock
+            ->expects($this->once())
+            ->method('getAllVersions')
+            ->with('patch')
+            ->will($this->returnValue(array(
+                array('name' => 'patch-b', 'type' => 'patch', 'rollback' => 'DROP TABLE b;', 'migration' => 'CREATE TABLE b(id INT);', 'checksum' => md5('CREATE TABLE b(id INT);')),
+            )));
+
+        $this->assertEquals(
+            array(
+                'patch-a' => array(
+                    'name'      => 'patch-a',
+                    'type'      => 'patch',
+                    'rollback'  => 'DROP TABLE a;',
+                    'checksum'  => md5('CREATE TABLE a(id INT);'),
+                    'on_disk'   => false,
+                    'in_db'     => true,
+                    'changed'   => false
+                )
+            ),
+            $this->dbvc->getAllPatchesToRollback()
+        );
+    }
+
     public function testDetectErrors()
     {
         $this->fileMock

@@ -164,6 +164,17 @@ class Dbvc
         return $patches;
     }
 
+    public function getAllPatchesToRollback()
+    {
+        $patches = $this->getStatus('patch');
+
+        $patches = array_filter($patches, function($patch) {
+            return $patch['in_db'] && !$patch['on_disk'];
+        });
+
+        return $patches;
+    }
+
     public function getNextTagName()
     {
         $tag = $this->db->getLastTag();

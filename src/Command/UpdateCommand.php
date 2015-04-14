@@ -20,12 +20,29 @@ class UpdateCommand extends DbvcCommand
             ->setName('update')
             ->setDescription('Update you database with all the tag/patch possible. This may require some rollback')
             ->addOption('without-script', 'w', InputOption::VALUE_NONE, 'Only update the version table, do not execute the migration script')
+            ->addOption('full', 'u', InputOption::VALUE_NONE, 'Rollback patches in DB but not on disk')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $withoutScript = $input->getOption('without-script');
+
+        if ($input->getOption('full') === true) {
+            foreach ($this->dbvc->getAllPatchesToRollback() as $patch) {
+                $output->writeln(">>> <info>Rollbacking patch '{$patch['name']}'</info>");
+                $output->writeln('You are about to execute this SQL script on your database :');
+                $output->writeln("<comment>{$patch['rollback']}</comment>");
+
+                if ($this->askConfirmation($output)) {
+                    $this->dbvc->rollback($patch, $withoutScript);
+                    $output->writeln("Patch rollbacked");
+                } else {
+                    $output->writeln("Rollback aborted by user");
+                    break;
+                }
+            }
+        }
 
         if ($nbtag = count($tags = $this->dbvc->getAllTagToMigrate()) > 0) {
             $patches = $this->dbvc->getAllPatchesInDb();

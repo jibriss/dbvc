@@ -35,7 +35,7 @@ class StatusCommand extends DbvcCommand
                     $patch['name'],
                     $patch['on_disk']
                         ? ($patch['changed'] ? '<fg=red>Changed</fg=red>' : 'Yes')
-                        : 'No',
+                        : '<fg=red>No</fg=red>',
                     $patch['in_db'] ? 'Yes' : '<fg=red>No</fg=red>',
                 ));
             }
