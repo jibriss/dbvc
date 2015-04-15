@@ -26,10 +26,12 @@ class UpdateCommand extends DbvcCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $nothingToDo = true;
         $withoutScript = $input->getOption('without-script');
 
         if ($input->getOption('full') === true) {
             foreach ($this->dbvc->getAllPatchesToRollback() as $patch) {
+                $nothingToDo = false;
                 $output->writeln(">>> <info>Rollbacking patch '{$patch['name']}'</info>");
                 $output->writeln('You are about to execute this SQL script on your database :');
                 $output->writeln("<comment>{$patch['rollback']}</comment>");
@@ -45,6 +47,7 @@ class UpdateCommand extends DbvcCommand
         }
 
         if ($nbtag = count($tags = $this->dbvc->getAllTagToMigrate()) > 0) {
+            $nothingToDo = false;
             $patches = $this->dbvc->getAllPatchesInDb();
 
             if ($nbPatch = count($patches) > 0) {
@@ -90,6 +93,7 @@ class UpdateCommand extends DbvcCommand
         $patchesToRollback = $this->dbvc->getAllPatchesThatChanged();
 
         foreach ($patchesToRollback as $patch) {
+            $nothingToDo = false;
             $output->writeln("The patch file '{$patch['name']}' has changed, and need to be rollbacked");
             $output->writeln(">>> <info>Rollbacking patch {$patch['name']}</info>");
             $output->writeln("The last version of the patch will be migrated right after");
@@ -107,6 +111,7 @@ class UpdateCommand extends DbvcCommand
         $patchesToMigrate = $this->dbvc->getAllPatchesNotInDb();
 
         foreach ($patchesToMigrate as $patch) {
+            $nothingToDo = false;
             $output->writeln(">>> <info>Migrating patch {$patch['name']}</info>");
             $output->writeln('You are about to execute this SQL script on your database :');
             $output->writeln("<comment>{$patch['migration']}</comment>");
@@ -117,6 +122,10 @@ class UpdateCommand extends DbvcCommand
             } else {
                 $output->writeln("Command aborted by user");
             }
+        }
+
+        if ($nothingToDo) {
+            $output->writeln("Your database is already up-to-date.");
         }
     }
 }
