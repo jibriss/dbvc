@@ -34,13 +34,7 @@ class TagMigrateCommand extends DbvcCommand
 
         foreach ($tags as $tag) {
             $output->writeln(">>> <info>Migrating to tag '{$tag['name']}'</info>");
-
-            if ($withoutScript) {
-                $output->writeln("The script won't be executed");
-            } else {
-                $output->writeln('You are about to execute this SQL script on your database :');
-                $output->writeln("<comment>{$tag['migration']}</comment>");
-            }
+            $this->displaySql($output, $tag['migration'], $withoutScript);
 
             if ($this->askConfirmation($output)) {
                 $this->dbvc->migrate($tag, $withoutScript);

@@ -46,13 +46,7 @@ class TagRollbackCommand extends DbvcCommand
         foreach ($tags as $tag) {
             $withoutScript = $input->getOption('without-script');
             $output->writeln(">>> <info>Rollbacking tag '{$tag['name']}'</info>");
-
-            if ($withoutScript) {
-                $output->writeln("The script won't be executed");
-            } else {
-                $output->writeln('You are about to execute this SQL script on your database :');
-                $output->writeln("<comment>{$tag['rollback']}</comment>");
-            }
+            $this->displaySql($output, $tag['rollback'], $withoutScript);
 
             if ($this->askConfirmation($output)) {
                 $this->dbvc->rollback($tag, $withoutScript);

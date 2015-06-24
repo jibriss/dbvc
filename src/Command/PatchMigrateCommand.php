@@ -39,13 +39,7 @@ class PatchMigrateCommand extends DbvcCommand
             $output->writeln("The patch '$name' file on disk has changed. You need to rollback then re-apply");
 
             $output->writeln(">>> <info>Rollbacking patch '{$patch['name']}'</info>");
-
-            if ($withoutScript) {
-                $output->writeln("The script won't be executed");
-            } else {
-                $output->writeln('You are about to execute this SQL script on your database :');
-                $output->writeln("<comment>{$patch['rollback']}</comment>");
-            }
+            $this->displaySql($output, $patch['rollback'], $withoutScript);
 
             if ($this->askConfirmation($output)) {
                 $this->dbvc->rollback($patch, $withoutScript);
@@ -63,12 +57,7 @@ class PatchMigrateCommand extends DbvcCommand
         } else {
             $output->writeln(">>> <info>Migrating patch '{$patch['name']}'</info>");
 
-            if ($withoutScript) {
-                $output->writeln("The script won't be executed");
-            } else {
-                $output->writeln('You are about to execute this SQL script on your database :');
-                $output->writeln("<comment>{$patch['migration']}</comment>");
-            }
+            $this->displaySql($output, $patch['migration'], $withoutScript);
 
             if ($this->askConfirmation($output)) {
                 $this->dbvc->migrate($patch, $withoutScript);

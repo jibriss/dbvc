@@ -87,4 +87,14 @@ abstract class DbvcCommand extends Command
     {
         return $this->getHelper('dialog')->askConfirmation($output, "<question>$question</question> ", $default);
     }
+
+    protected function displaySql(OutputInterface $output, $sql, $withoutScript = true)
+    {
+        if ($withoutScript) {
+            $output->writeln("The script won't be executed");
+        } else {
+            $output->writeln('You are about to execute this SQL script on your database :');
+            $output->writeln("<comment>{$sql}</comment>");
+        }
+    }
 }

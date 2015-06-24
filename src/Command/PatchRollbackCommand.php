@@ -34,13 +34,7 @@ class PatchRollbackCommand extends DbvcCommand
         } else {
             $withoutScript = $input->getOption('without-script');
             $output->writeln(">>> <info>Rollbacking patch '{$patch['name']}'</info>");
-
-            if ($withoutScript) {
-                $output->writeln("The script won't be executed");
-            } else {
-                $output->writeln('You are about to execute this SQL script on your database :');
-                $output->writeln("<comment>{$patch['rollback']}</comment>");
-            }
+            $this->displaySql($output, $patch['rollback'], $withoutScript);
 
             if ($this->askConfirmation($output)) {
                 $this->dbvc->rollback($patch, $withoutScript);

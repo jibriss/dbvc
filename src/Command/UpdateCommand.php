@@ -33,8 +33,7 @@ class UpdateCommand extends DbvcCommand
             foreach ($this->dbvc->getAllPatchesToRollback() as $patch) {
                 $nothingToDo = false;
                 $output->writeln(">>> <info>Rollbacking patch '{$patch['name']}'</info>");
-                $output->writeln('You are about to execute this SQL script on your database :');
-                $output->writeln("<comment>{$patch['rollback']}</comment>");
+                $this->displaySql($output, $patch['rollback'], $withoutScript);
 
                 if ($this->askConfirmation($output)) {
                     $this->dbvc->rollback($patch, $withoutScript);
@@ -58,8 +57,7 @@ class UpdateCommand extends DbvcCommand
                 if ($this->getHelper('dialog')->askConfirmation($output, "<question>$question</question> ", false)) {
                     foreach ($patches as $patch) {
                         $output->writeln(">>> <info>Rollbacking patch '{$patch['name']}'</info>");
-                        $output->writeln('You are about to execute this SQL script on your database :');
-                        $output->writeln("<comment>{$patch['rollback']}</comment>");
+                        $this->displaySql($output, $patch['rollback'], $withoutScript);
 
                         if ($this->askConfirmation($output)) {
                             $this->dbvc->rollback($patch, $withoutScript);
@@ -77,8 +75,7 @@ class UpdateCommand extends DbvcCommand
 
             foreach ($tags as $tag) {
                 $output->writeln(">>> <info>Migrating tag '{$tag['name']}'</info>");
-                $output->writeln('You are about to execute this SQL script on your database :');
-                $output->writeln("<comment>{$tag['migration']}</comment>");
+                $this->displaySql($output, $tag['migration'], $withoutScript);
 
                 if ($this->askConfirmation($output)) {
                     $this->dbvc->migrate($tag, $withoutScript);
@@ -97,8 +94,7 @@ class UpdateCommand extends DbvcCommand
             $output->writeln("The patch file '{$patch['name']}' has changed, and need to be rollbacked");
             $output->writeln(">>> <info>Rollbacking patch {$patch['name']}</info>");
             $output->writeln("The last version of the patch will be migrated right after");
-            $output->writeln('You are about to execute this SQL script on your database :');
-            $output->writeln("<comment>{$patch['rollback']}</comment>");
+            $this->displaySql($output, $patch['rollback'], $withoutScript);
 
             if ($this->askConfirmation($output)) {
                 $this->dbvc->rollback($patch, $withoutScript);
@@ -113,8 +109,7 @@ class UpdateCommand extends DbvcCommand
         foreach ($patchesToMigrate as $patch) {
             $nothingToDo = false;
             $output->writeln(">>> <info>Migrating patch {$patch['name']}</info>");
-            $output->writeln('You are about to execute this SQL script on your database :');
-            $output->writeln("<comment>{$patch['migration']}</comment>");
+            $this->displaySql($output, $patch['migration'], $withoutScript);
 
             if ($this->askConfirmation($output)) {
                 $this->dbvc->migrate($patch, $withoutScript);
