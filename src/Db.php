@@ -81,7 +81,7 @@ class Db
     public function getLastTag()
     {
         return $this->connection->fetchAssoc(
-            "SELECT * FROM {$this->tableName} WHERE type = 'tag' ORDER BY name DESC LIMIT 1"
+            "SELECT * FROM {$this->tableName} WHERE type = 'tag' ORDER BY CAST(name AS INT) DESC LIMIT 1"
         );
     }
 
