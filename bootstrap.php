@@ -8,6 +8,7 @@ $application->setVersion('beta');
 $application->setName('DBVC');
 $application->add(new Command\InitCommand());
 $application->add(new Command\StatusCommand());
+$application->add(new Command\PatchCreateCommand());
 $application->add(new Command\PatchMigrateCommand());
 $application->add(new Command\PatchRollbackCommand());
 $application->add(new Command\TagMigrateCommand());
