@@ -1,5 +1,8 @@
 <?php
+
 namespace Jibriss\Dbvc;
+
+use Exception;
 
 class Dbvc
 {
