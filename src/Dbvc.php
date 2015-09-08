@@ -111,7 +111,7 @@ class Dbvc
 
     public function getAllTagToMigrate()
     {
-        $tags = $this->getStatus('tag');
+        $tags = $this->getStatus(FileType::TAG);
 
         $tags = array_filter($tags, function($tag) {
             return !$tag['in_db'];
@@ -122,7 +122,7 @@ class Dbvc
 
     public function getAllTagToRollback($targetTagName)
     {
-        $tags = $this->getStatus('tag');
+        $tags = $this->getStatus(FileType::TAG);
 
         $tags = array_filter($tags, function($tag) use($targetTagName) {
             return $tag['in_db'] && (int)$tag['name'] > (int)$targetTagName;
@@ -135,7 +135,7 @@ class Dbvc
 
     public function getAllPatchesThatChanged()
     {
-        $patches = $this->getStatus('patch');
+        $patches = $this->getStatus(FileType::PATCH);
 
         $patches = array_filter($patches, function($patch) {
             return $patch['changed'];
@@ -147,7 +147,7 @@ class Dbvc
 
     public function getAllPatchesNotInDb()
     {
-        $patches = $this->getStatus('patch');
+        $patches = $this->getStatus(FileType::PATCH);
 
         $patches = array_filter($patches, function($patch) {
             return !$patch['in_db'];
@@ -158,7 +158,7 @@ class Dbvc
 
     public function getAllPatchesInDb()
     {
-        $patches = $this->getStatus('patch');
+        $patches = $this->getStatus(FileType::PATCH);
 
         $patches = array_filter($patches, function($patch) {
                 return $patch['in_db'];
@@ -169,7 +169,7 @@ class Dbvc
 
     public function getAllPatchesToRollback()
     {
-        $patches = $this->getStatus('patch');
+        $patches = $this->getStatus(FileType::PATCH);
 
         $patches = array_filter($patches, function($patch) {
             return $patch['in_db'] && !$patch['on_disk'];
@@ -197,7 +197,7 @@ class Dbvc
 
         $tag = array(
             'name' => (string)$this->getNextTagName(),
-            'type' => 'tag',
+            'type' => FileType::TAG,
             'migration' => $migration,
             'rollback' => $rollback
         );

@@ -8,8 +8,8 @@ class File
     public function __construct($patchesPath, $tagsPath)
     {
         $this->path = array(
-            'patch' => rtrim($patchesPath, '/') . '/',
-            'tag'   => rtrim($tagsPath, '/') . '/'
+            FileType::PATCH => rtrim($patchesPath, '/') . '/',
+            FileType::TAG   => rtrim($tagsPath, '/') . '/'
         );
     }
 
@@ -17,7 +17,7 @@ class File
     {
         $errors = array();
 
-        foreach (glob($this->path['tag'] .'*') as $file) {
+        foreach (glob($this->path[FileType::TAG] .'*') as $file) {
             if (substr($file, -14) !== '-migration.sql' && substr($file, -13) !== '-rollback.sql') {
                 $errors[] = sprintf(
                     "The file '%s' does not follow the naming convention rule.\nIt will be ignored",
@@ -44,7 +44,7 @@ class File
             }
         }
 
-        foreach (glob($this->path['patch'] .'*') as $file) {
+        foreach (glob($this->path[FileType::PATCH] .'*') as $file) {
             if (substr($file, -14) !== '-migration.sql' && substr($file, -13) !== '-rollback.sql') {
                 $errors[] = sprintf(
                     "The file '%s' does not follow the naming convention rule.\nIt will be ignored",
