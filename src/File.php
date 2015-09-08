@@ -141,4 +141,15 @@ class File
         file_exists($migrationFile) && unlink($migrationFile);
         file_exists($rollbackFile) && unlink($rollbackFile);
     }
+
+    public function getMigrationFilePath($type, $name)
+    {
+        return $this->path[$type] . $name . '-migration.sql';
+    }
+
+    public function getRollbackFilePath($type, $name)
+    {
+        return $this->path[$type] . $name . '-rollback.sql';
+    }
+
 }

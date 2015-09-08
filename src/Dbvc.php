@@ -210,6 +210,26 @@ class Dbvc
         return $tag;
     }
 
+    public function createNewPatch($name)
+    {
+        $version = $this->file->getVersion('patch', $name);
+
+        if ($version['on_disk']) {
+            throw new Exception("Patch '$name' already exists");
+        }
+
+        $patch = array(
+            'name' => $name,
+            'type' => FileType::PATCH,
+            'migration' => '',
+            'rollback' => ''
+        );
+
+        $this->file->create($patch);
+
+        return $patch;
+    }
+
     public function detectErrors()
     {
         return $this->file->detectErrors();
