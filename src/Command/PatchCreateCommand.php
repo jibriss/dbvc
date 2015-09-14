@@ -14,7 +14,7 @@ class PatchCreateCommand extends DbvcCommand
 
         $this
             ->setName('patch:create')
-            ->addArgument('patch_name', InputArgument::REQUIRED, 'Name of the patch to apply')
+            ->addArgument('patch_name', InputArgument::REQUIRED, 'Name of the patch to create')
             ->setDescription('Create new empty patch files : migration and rollback')
         ;
     }
