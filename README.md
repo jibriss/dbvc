@@ -53,7 +53,7 @@ Edit it to your needs and you'll be ready.
 
 ### Creating a new patch
 
-To create a new patch, you have to manually add 2 files into your patch folder :
+To create a new patch, run ``dbvc patch:create awesome-feature``. 2 new files will appear in the patch directory :
 
 - awesome-feature-migration.sql
 - awesome-feature-rollback.sql
