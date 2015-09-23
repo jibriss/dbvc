@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableHelper;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class StatusCommand extends DbvcCommand
@@ -16,7 +17,8 @@ class StatusCommand extends DbvcCommand
 
         $this
             ->setName('status')
-            ->setDescription('Display details about all the patches and versions')
+            ->setDescription('Display details about all the patches and tags')
+            ->addOption('limit-tag', 'l', InputOption::VALUE_REQUIRED, 'Number of tags to display or "all"', '10')
         ;
     }
 
@@ -45,7 +47,23 @@ class StatusCommand extends DbvcCommand
             $output->writeln('');
         }
 
-        if (count($tags = $this->dbvc->getStatus('tag')) > 0) {
+        $tagCount = count($tags = $this->dbvc->getStatus('tag'));
+
+        if ($tagCount > 0) {
+
+            $limitTag = $input->getOption('limit-tag');
+
+            if ($limitTag != 'all') {
+                if ((int)$limitTag < 1) {
+                    throw new \InvalidArgumentException('--limit-tag option must be a positive integer or "all"');
+                }
+
+                if ((int)$limitTag < $tagCount) {
+                    $table->addRow(array('[...]'));
+                }
+                $tags = array_slice($tags, -(int)$limitTag);
+            }
+
             $table->setHeaders(array('Tag name', 'On disk', 'In DB'));
 
             foreach ($tags as $tag) {
